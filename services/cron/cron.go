@@ -37,11 +37,12 @@ func constructMessage(data []HealthCheckResult) string {
 		return "👨🏻‍⚕️ Health Check Report - no service found"
 	}
 
-	date := data[0].CheckedAt.Format("12 Jan 2023, 15.04.05")
-	message := "👨🏻‍⚕️ Health Check Report " + date + "\n"
+	date := data[0].CheckedAt.Format("02 Jan 2006, 15.04.05")
+	message := "👨🏻‍⚕️ Health Check Report " + "\n"
+	message += "🗓️ " + date + "\n\n"
 
 	for _, res := range data {
-		message += "•" + res.Name + " "
+		message += "• " + res.Name + " "
 
 		if res.Status {
 			message += "✅\n"
@@ -51,7 +52,7 @@ func constructMessage(data []HealthCheckResult) string {
 		message += "❌ (" + res.Error + ")\n"
 	}
 
-	return ""
+	return message
 }
 
 func Start(env *env.Env) {
@@ -90,6 +91,7 @@ func Start(env *env.Env) {
 				errMessage = err.Error()
 			}
 
+			log.Println("Append the array")
 			results = append(results, HealthCheckResult{
 				ID:        service.ID,
 				Name:      service.Name,
@@ -97,9 +99,13 @@ func Start(env *env.Env) {
 				Status:    res,
 				CheckedAt: time.Now(),
 			})
+
+			log.Println("Loop of " + service.Name + " is end")
 		}
 
-		telegram.Send(constructMessage(results), false)
+		message := constructMessage(results)
+		log.Println(message)
+		telegram.Send(message, false)
 	})
 
 	s.StartAsync()
