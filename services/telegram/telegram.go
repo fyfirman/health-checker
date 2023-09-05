@@ -3,6 +3,7 @@ package telegram
 import (
 	"bytes"
 	"encoding/json"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -44,6 +45,22 @@ func Send(message string, DisableNotification bool) error {
 	telegramAPIURL := "https://api.telegram.org/bot" + telegramBotToken + "/sendMessage"
 
 	resp, err := http.Post(telegramAPIURL, "application/json", bytes.NewBuffer(botMessageBytes))
+
+	if err != nil {
+		return err
+	}
+
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if len(bodyBytes) > 0 {
+		var prettyJSON bytes.Buffer
+		if err = json.Indent(&prettyJSON, bodyBytes, "", "\t"); err != nil {
+			log.Printf("JSON parse error: %v", err)
+		}
+		log.Println(prettyJSON.String())
+	} else {
+		log.Printf("Body: No Body Supplied\n")
+	}
+
 	if err != nil {
 		return err
 	}
