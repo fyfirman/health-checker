@@ -1,24 +1,34 @@
 package helpers
 
 import (
-	"fmt"
-	"strconv"
-	"strings"
+	"bytes"
+	"encoding/json"
+	"io"
+	"io/ioutil"
+	"log"
 )
 
-func ReplaceWildcard(input string, numDigits int, replacementNumber int) string {
-	// Find the position of the wildcard character
-	wildcardPos := strings.Index(input, "*")
-	if wildcardPos == -1 {
-		// Wildcard not found, return original string
-		return input
+func PrintReader(r io.Reader) {
+	bodyBytes, err := ioutil.ReadAll(r)
+
+	if err != nil {
+		log.Print(err)
+		return
 	}
 
-	// Generate the replacement string with the specified number of digits
-	formatStr := "%0" + strconv.Itoa(numDigits) + "d"
-	replacement := fmt.Sprintf(formatStr, replacementNumber)
+	PrintByte(bodyBytes)
+}
 
-	// Replace the wildcard character with the generated replacement string
-	output := strings.Replace(input, "*", replacement, 1)
-	return output
+func PrintByte(bodyBytes []byte) {
+	var err error
+
+	if len(bodyBytes) > 0 {
+		var prettyJSON bytes.Buffer
+		if err = json.Indent(&prettyJSON, bodyBytes, "", "\t"); err != nil {
+			log.Printf("JSON parse error: %v", err)
+		}
+		log.Println(prettyJSON.String())
+	} else {
+		log.Printf("Body: No Body Supplied\n")
+	}
 }

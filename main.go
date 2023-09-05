@@ -15,7 +15,7 @@ import (
 )
 
 func main() {
-	appVersion := "0.1.1"
+	appVersion := "0.1.2"
 	log.Println("🚀 Starting health-checker v" + appVersion)
 
 	godotenv.Load(".env")

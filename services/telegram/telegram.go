@@ -3,7 +3,7 @@ package telegram
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
+	"health-checker/helpers"
 	"log"
 	"net/http"
 	"os"
@@ -14,6 +14,10 @@ type TelegramMessage struct {
 	ChatID              int    `json:"chat_id"`
 	Text                string `json:"text"`
 	DisableNotification bool   `json:"disable_notification"`
+}
+
+type TelegramSendResponse struct {
+	Ok bool `json:"ok"`
 }
 
 func Send(message string, DisableNotification bool) error {
@@ -50,21 +54,17 @@ func Send(message string, DisableNotification bool) error {
 		return err
 	}
 
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
-	if len(bodyBytes) > 0 {
-		var prettyJSON bytes.Buffer
-		if err = json.Indent(&prettyJSON, bodyBytes, "", "\t"); err != nil {
-			log.Printf("JSON parse error: %v", err)
-		}
-		log.Println(prettyJSON.String())
-	} else {
-		log.Printf("Body: No Body Supplied\n")
-	}
-
-	if err != nil {
-		return err
-	}
 	defer resp.Body.Close()
+
+	responseBody := TelegramSendResponse{}
+	json.NewDecoder(resp.Body).Decode(&responseBody)
+
+	if !responseBody.Ok {
+		log.Fatalln("Response of status is not ok.")
+		log.Println(telegramAPIURL)
+		helpers.PrintByte(botMessageBytes)
+		helpers.PrintReader(resp.Body)
+	}
 
 	return nil
 }
