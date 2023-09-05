@@ -105,7 +105,10 @@ func Start(env *env.Env) {
 
 		message := constructMessage(results)
 		log.Println(message)
-		telegram.Send(message, false)
+		err = telegram.Send(message, false)
+		if err != nil {
+			log.Fatal(err)
+		}
 	})
 
 	s.StartAsync()

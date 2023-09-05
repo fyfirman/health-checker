@@ -15,7 +15,7 @@ import (
 )
 
 func main() {
-	appVersion := "0.1.0"
+	appVersion := "0.1.1"
 	log.Println("🚀 Starting health-checker v" + appVersion)
 
 	godotenv.Load(".env")
@@ -25,7 +25,10 @@ func main() {
 	if err != nil {
 		panic(err.Error())
 	}
-	telegram.Send("🚀 health-checker v"+appVersion+" has started", false)
+	err = telegram.Send("🚀 health-checker v"+appVersion+" has started", false)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	env := &env.Env{Db: db}
 
