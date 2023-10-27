@@ -27,7 +27,7 @@ func main() {
 	}
 	err = telegram.Send("🚀 health-checker v"+appVersion+" has started", false)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	env := &env.Env{Db: db}
