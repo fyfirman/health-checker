@@ -60,7 +60,7 @@ func Send(message string, DisableNotification bool) error {
 	json.NewDecoder(resp.Body).Decode(&responseBody)
 
 	if !responseBody.Ok {
-		log.Fatalln("Response of status is not ok.")
+		log.Println("Response of status is not ok.")
 		log.Println(telegramAPIURL)
 		helpers.PrintByte(botMessageBytes)
 		helpers.PrintReader(resp.Body)
